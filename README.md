@@ -77,7 +77,6 @@ The system must be containerized, secure, optimized, and maintain data persisten
 ├── docker/
 │   ├── compose.development.yaml # ✅ Dev environment
 │   ├── compose.production.yaml  # ✅ Production environment
-│   └── mongo-init.sh            # ✅ Database initialization
 ├── Makefile                     # ✅ Complete CLI (40+ commands)
 ├── .env.example                 # ✅ Environment template
 ├── .dockerignore                # ✅ Root ignore file
