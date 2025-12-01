@@ -1,6 +1,124 @@
-# services:
-  # backend:
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7-jammy
+    container_name: ecommerce-mongodb-dev
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_DATABASE}
+    ports:
+      # Expose MongoDB port for development debugging
+      - "27017:27017"
+    volumes:
+      # Persistent data storage
+      - mongodb_data_dev:/data/db
+      - mongodb_config_dev:/data/configdb
+      # Custom initialization scripts
+      - ./mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh:ro
+    networks:
+      - ecommerce-network-dev
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh mongodb://localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
-  # gateway:
+  # Backend Service
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile.dev
+    container_name: ecommerce-backend-dev
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      BACKEND_PORT: ${BACKEND_PORT}
+      MONGO_URI: ${MONGO_URI}
+      MONGO_DATABASE: ${MONGO_DATABASE}
+    # Port is exposed only for direct debugging, NOT for external access
+    ports:
+      - "3847:3847"
+    volumes:
+      # Mount source code for hot reload
+      - ../backend/src:/app/src:ro
+      - ../backend/package.json:/app/package.json:ro
+      - ../backend/tsconfig.json:/app/tsconfig.json:ro
+      # Named volume for node_modules to avoid conflicts
+      - backend_node_modules_dev:/app/node_modules
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - ecommerce-network-dev
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3847/api/health', (r) => { process.exit(r.statusCode === 200 ? 0 : 1); })"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
-  # mongo:
+  # Gateway Service
+  gateway:
+    build:
+      context: ../gateway
+      dockerfile: Dockerfile.dev
+    container_name: ecommerce-gateway-dev
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      GATEWAY_PORT: ${GATEWAY_PORT}
+      BACKEND_URL: ${BACKEND_URL}
+    ports:
+      # Only gateway is exposed to external traffic
+      - "5921:5921"
+    volumes:
+      # Mount source code for hot reload
+      - ../gateway/src:/app/src:ro
+      - ../gateway/package.json:/app/package.json:ro
+      # Named volume for node_modules
+      - gateway_node_modules_dev:/app/node_modules
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - ecommerce-network-dev
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:5921/health', (r) => { process.exit(r.statusCode === 200 ? 0 : 1); })"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  ecommerce-network-dev:
+    driver: bridge
+    name: ecommerce-network-dev
+
+volumes:
+  mongodb_data_dev:
+    name: ecommerce-mongodb-data-dev
+  mongodb_config_dev:
+    name: ecommerce-mongodb-config-dev
+  backend_node_modules_dev:
+    name: ecommerce-backend-node-modules-dev
+  gateway_node_modules_dev:
+    name: ecommerce-gateway-node-modules-dev
+

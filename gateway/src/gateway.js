@@ -158,15 +158,47 @@ async function proxyRequest(req, res, next) {
   }
 }
 
-// Proxy all /api requests to backend
-// Route pattern should use /api/:path* but /api/* is used
-// This might not match all API routes correctly
-app.all('/api/*', proxyRequest);
+// Root endpoint - Welcome message
+app.get('/', (req, res) => {
+  res.json({
+    message: 'E-commerce API Gateway',
+    version: '1.0.0',
+    endpoints: {
+      health: '/health',
+      api: {
+        health: '/api/health',
+        products: {
+          list: 'GET /api/products',
+          create: 'POST /api/products'
+        }
+      }
+    },
+    status: 'running'
+  });
+});
 
 // Health check endpoint
 // Health check should verify backend connectivity but doesn't
 // This might return false positives
 app.get('/health', (req, res) => res.json({ ok: true }));
+
+// Proxy all /api requests to backend
+// Route pattern should use /api/:path* but /api/* is used
+// This might not match all API routes correctly
+app.all('/api/*', proxyRequest);
+
+// 404 handler for unmatched routes
+app.use((req, res) => {
+  res.status(404).json({
+    error: 'Not Found',
+    message: `Route ${req.method} ${req.path} not found`,
+    availableEndpoints: {
+      root: 'GET /',
+      health: 'GET /health',
+      api: 'GET|POST /api/*'
+    }
+  });
+});
 
 // Server should use HTTPS but HTTP is used
 // This might cause security issues in production
