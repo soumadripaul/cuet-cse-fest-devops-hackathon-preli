@@ -33,6 +33,7 @@ Backend (port 3847, internal) ──► MongoDB (port 27017, internal)
 ## Project Structure
 
 **DO NOT CHANGE THE PROJECT STRUCTURE.** The following structure must be maintained:
+```
 .
 ├── backend/         # Node.js backend (Dockerized)
 ├── gateway/         # API gateway (Dockerized)
@@ -69,6 +70,7 @@ Backend (port 3847, internal) ──► MongoDB (port 27017, internal)
 
 ## 🛠️ Makefile Highlights
 
+```
 | Command           | Description                        |
 |-------------------|------------------------------------|
 | `make dev-up`     | Start dev environment              |
@@ -77,7 +79,7 @@ Backend (port 3847, internal) ──► MongoDB (port 27017, internal)
 | `make test-api`   | Run API tests                      |
 | `make logs`       | View logs                          |
 | `make clean-all`  | Remove all containers, volumes, etc|
-
+```
 Run `make help` for the full list.
 
 ---
