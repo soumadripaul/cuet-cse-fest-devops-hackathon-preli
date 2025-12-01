@@ -61,8 +61,7 @@ The system must be containerized, secure, optimized, and maintain data persisten
 - Backend and MongoDB should not be exposed to public network
 
 ## Project Structure
-
-**DO NOT CHANGE THE PROJECT STRUCTURE.** The following structure must be maintained:
+```
 .
 ├── backend/
 │   ├── Dockerfile              # ✅ Multi-stage production build
@@ -88,7 +87,7 @@ The system must be containerized, secure, optimized, and maintain data persisten
 
 1. **Setup environment**
 
-   ```bash
+  ```bash
    make setup  # Creates .env from .env.example
    ```
 
