@@ -17,13 +17,34 @@ This project transforms a simple e-commerce backend into a robust, fully contain
 ## Architecture
 
 ```
-Client/User
-    │
-    ▼
-Gateway (port 5921, exposed)
-    │
-    ▼
-Backend (port 3847, internal) ──► MongoDB (port 27017, internal)
+                    ┌─────────────────┐
+                    │   Client/User   │
+                    └────────┬────────┘
+                             │
+                             │ HTTP (port 5921)
+                             │
+                    ┌────────▼────────┐
+                    │    Gateway      │
+                    │  (port 5921)    │
+                    │   [Exposed]     │
+                    └────────┬────────┘
+                             │
+                    ┌────────┴────────┐
+                    │                 │
+         ┌──────────▼──────────┐      │
+         │   Private Network   │      │
+         │  (Docker Network)   │      │
+         └──────────┬──────────┘      │
+                    │                 │
+         ┌──────────┴──────────┐      │
+         │                     │      │
+    ┌────▼────┐         ┌──────▼──────┐
+    │ Backend │         │   MongoDB   │
+    │(port    │◄────────┤  (port      │
+    │ 3847)   │         │  27017)     │
+    │[Not     │         │ [Not        │
+    │Exposed] │         │ Exposed]    │
+    └─────────┘         └─────────────┘
 ```
 - Only the Gateway is exposed externally.
 - Backend and MongoDB are isolated within a private Docker network.
