@@ -32,15 +32,17 @@ Backend (port 3847, internal) ──► MongoDB (port 27017, internal)
 
 ## Project Structure
 
-```
+**DO NOT CHANGE THE PROJECT STRUCTURE.** The following structure must be maintained:
 .
 ├── backend/         # Node.js backend (Dockerized)
 ├── gateway/         # API gateway (Dockerized)
 ├── docker/
-│   ├── compose.development.yaml
-│   └── compose.production.yaml
-├── Makefile         # CLI for all operations
-├── .env.example     # Environment variable template
+│   ├── compose.development.yaml # ✅ Dev environment
+│   ├── compose.production.yaml  # ✅ Production environment
+│   └── mongo-init.sh            # ✅ Database initialization
+├── Makefile                     # ✅ Complete CLI (40+ commands)
+├── .env.example                 # ✅ Environment template
+├── .dockerignore                # ✅ Root ignore file
 └── README.md
 ```
 
@@ -50,9 +52,8 @@ Backend (port 3847, internal) ──► MongoDB (port 27017, internal)
 
 **Prerequisites:** Docker, Docker Compose, GNU Make
 
-1. **Setup environment:**
    ```bash
-   make setup
+   make setup  # Creates .env from .env.example
    ```
 2. **Edit `.env`** with your MongoDB credentials.
 3. **Start services:**
