@@ -32,7 +32,6 @@ Backend (port 3847, internal) ──► MongoDB (port 27017, internal)
 
 ## Project Structure
 
-**DO NOT CHANGE THE PROJECT STRUCTURE.** The following structure must be maintained:
 ```
 .
 ├── backend/         # Node.js backend (Dockerized)
