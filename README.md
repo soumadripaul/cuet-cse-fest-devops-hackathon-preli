@@ -34,12 +34,19 @@ Backend (port 3847, internal) ──► MongoDB (port 27017, internal)
 
 ```
 .
-├── backend/         # Node.js backend (Dockerized)
-├── gateway/         # API gateway (Dockerized)
+├── backend/
+│   ├── Dockerfile              # ✅ Multi-stage production build
+│   ├── Dockerfile.dev          # ✅ Development with hot-reload
+│   ├── .dockerignore           # ✅ Build optimization
+│   └── src/
+├── gateway/
+│   ├── Dockerfile              # ✅ Multi-stage production build
+│   ├── Dockerfile.dev          # ✅ Development with hot-reload
+│   ├── .dockerignore           # ✅ Build optimization
+│   └── src/
 ├── docker/
 │   ├── compose.development.yaml # ✅ Dev environment
 │   ├── compose.production.yaml  # ✅ Production environment
-│   └── mongo-init.sh            # ✅ Database initialization
 ├── Makefile                     # ✅ Complete CLI (40+ commands)
 ├── .env.example                 # ✅ Environment template
 ├── .dockerignore                # ✅ Root ignore file
